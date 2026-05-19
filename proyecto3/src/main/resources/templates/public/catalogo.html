@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Catalogo | E-Commerce UTS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <style>
+        body { background: #f8f9fa; }
+        .product-card { transition: transform .2s; border: none; border-radius: 12px; }
+        .product-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,.1); }
+        .product-img { height: 160px; background: #e9ecef; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: #adb5bd; border-radius: 12px 12px 0 0; }
+    </style>
+</head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold"><i class="fas fa-store me-2 text-primary"></i>Catalogo de Productos</h4>
+        <form th:action="@{/catalogo}" method="get" class="d-flex gap-2">
+            <input type="text" name="buscar" class="form-control" placeholder="Buscar producto..."
+                   th:value="${buscar}"/>
+            <button class="btn btn-primary"><i class="fas fa-search"></i></button>
+        </form>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-4 col-lg-3" th:each="p : ${productos}">
+            <div class="card product-card shadow-sm h-100">
+                <div class="product-img"><i class="fas fa-box"></i></div>
+                <div class="card-body">
+                    <h6 class="fw-bold" th:text="${p.nombre}"></h6>
+                    <p class="text-muted small" th:text="${p.descripcion != null ? #strings.abbreviate(p.descripcion, 80) : ''}"></p>
+                    <div class="fw-bold text-primary">
+                        $<span th:text="${#numbers.formatDecimal(p.precio, 1, 'COMMA', 0, 'POINT')}"></span>
+                    </div>
+                    <div class="mt-2" sec:authorize="!isAuthenticated()">
+                        <a th:href="@{/login}" class="btn btn-outline-primary btn-sm w-100">
+                            <i class="fas fa-sign-in-alt me-1"></i>Ingresar para comprar
+                        </a>
+                    </div>
+                    <div class="mt-2" sec:authorize="isAuthenticated()">
+                        <a th:href="@{/cliente/home}" class="btn btn-primary btn-sm w-100">
+                            <i class="fas fa-cart-plus me-1"></i>Agregar al carrito
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12" th:if="${#lists.isEmpty(productos)}">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>No se encontraron productos.
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

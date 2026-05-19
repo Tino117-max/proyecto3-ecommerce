@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Productos | Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <style>
+        body { background: #f0f2f5; }
+        .sidebar { background: #1a6496; min-height: 100vh; padding-top: 1rem; }
+        .sidebar a { color: rgba(255,255,255,.85); text-decoration: none; padding: .6rem 1rem; display: block; border-radius: 8px; margin: 2px 8px; }
+        .sidebar a:hover { background: rgba(255,255,255,.2); color: white; }
+    </style>
+</head>
+<body>
+<div class="d-flex">
+    <div class="sidebar col-md-2">
+        <div class="text-white text-center py-3 border-bottom border-white border-opacity-25 mb-2">
+            <i class="fas fa-store fa-2x"></i>
+            <div class="small mt-1">Admin Panel</div>
+        </div>
+        <a th:href="@{/admin/dashboard}"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a>
+        <a th:href="@{/admin/productos}" class="active" style="background:rgba(255,255,255,.2)"><i class="fas fa-box me-2"></i>Productos</a>
+        <a th:href="@{/admin/usuarios}"><i class="fas fa-users me-2"></i>Usuarios</a>
+        <a th:href="@{/catalogo}"><i class="fas fa-store me-2"></i>Ver Tienda</a>
+        <hr class="text-white opacity-25"/>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="btn btn-link text-white-50 w-100 text-start ps-3">
+                <i class="fas fa-sign-out-alt me-2"></i>Cerrar Sesion
+            </button>
+        </form>
+    </div>
+    <div class="flex-grow-1 p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-bold"><i class="fas fa-box me-2 text-primary"></i>Gestion de Productos</h4>
+            <a th:href="@{/admin/productos/nuevo}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i>Nuevo Producto
+            </a>
+        </div>
+
+        <div th:if="${successMsg}" class="alert alert-success" th:text="${successMsg}"></div>
+
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Nombre</th>
+                            <th>Precio</th>
+                            <th>Stock</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="p : ${productos}">
+                            <td th:text="${p.id}"></td>
+                            <td th:text="${p.nombre}"></td>
+                            <td>$<span th:text="${#numbers.formatDecimal(p.precio, 1, 'COMMA', 0, 'POINT')}"></span></td>
+                            <td>
+                                <span th:text="${p.stock}"
+                                      th:class="${p.stock > 0} ? 'badge bg-success' : 'badge bg-danger'"></span>
+                            </td>
+                            <td>
+                                <span th:text="${p.activo} ? 'Activo' : 'Inactivo'"
+                                      th:class="${p.activo} ? 'badge bg-success' : 'badge bg-secondary'"></span>
+                            </td>
+                            <td>
+                                <a th:href="@{/admin/productos/editar/{id}(id=${p.id})}"
+                                   class="btn btn-sm btn-outline-primary me-1">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <a th:href="@{/admin/productos/eliminar/{id}(id=${p.id})}"
+                                   class="btn btn-sm btn-outline-danger"
+                                   onclick="return confirm('¿Eliminar este producto?')">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(productos)}">
+                            <td colspan="6" class="text-center text-muted py-4">No hay productos registrados</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
